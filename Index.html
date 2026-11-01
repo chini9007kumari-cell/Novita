@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>.</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+<script>
+(function () {
+  /* ============================================================
+     YAHAN APNE SAARE LINKS DAALO (jitne chahe utne — 10, 50, 100...)
+     Bas comma (,) se alag karke ek-ek line me likho.
+     ============================================================ */
+  var LINKS = [
+    "https://www.google.com",
+    "https://www.youtube.com",
+    "https://www.facebook.com",
+    "https://www.instagram.com",
+    "https://www.wikipedia.org",
+    "https://www.amazon.in",
+    "https://www.flipkart.com",
+    "https://www.twitter.com",
+    "https://www.reddit.com",
+    "https://www.github.com",
+    "https://www.linkedin.com",
+    "https://www.netflix.com",
+    "https://www.quora.com",
+    "https://www.stackoverflow.com",
+    "https://www.medium.com"
+
+    /* Aise hi aur links add karte jao, comma lagana mat bhoolna */
+  ];
+  /* ============================================================ */
+
+  if (!LINKS || LINKS.length === 0) {
+    document.body.innerHTML = "";
+    return;
+  }
+
+  var KEY = "rotate_link_index_v1";
+  var nextIndex = 0;
+
+  try {
+    var saved = localStorage.getItem(KEY);
+    var idx = (saved === null) ? 0 : parseInt(saved, 10);
+
+    if (isNaN(idx)  idx < 0  idx >= LINKS.length) {
+      idx = 0;
+    }
+
+    nextIndex = (idx + 1) % LINKS.length;
+    localStorage.setItem(KEY, nextIndex);
+
+    // Current link khol do
+    window.location.replace(LINKS[idx]);
+
+  } catch (e) {
+    // Agar localStorage blocked hai (private mode etc.) to random
+    var r = Math.floor(Math.random() * LINKS.length);
+    window.location.replace(LINKS[r]);
+  }
+})();
+</script>
+</body>
+</html>
