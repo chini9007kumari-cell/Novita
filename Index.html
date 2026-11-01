@@ -3,22 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>.</title>
+<title>Redirecting...</title>
 <style>
   html, body {
     margin: 0;
     padding: 0;
+    height: 100%;
     background: #ffffff;
     overflow: hidden;
+  }
+  #fallback {
+    display: none;
+    font-family: system-ui, Arial, sans-serif;
+    text-align: center;
+    padding-top: 35vh;
+    color: #222;
+  }
+  #fallback a {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 18px;
+    color: #0b57d0;
+    word-break: break-all;
   }
 </style>
 </head>
 <body>
+
+<div id="fallback">
+  <p>Redirect nahi hua? Neeche click karo:</p>
+  <a id="manualLink" href="#" rel="noopener">Click here</a>
+</div>
+
 <script>
 (function () {
   /* ============================================================
-     YAHAN APNE SAARE LINKS DAALO (jitne chahe utne — 10, 50, 100...)
-     Bas comma (,) se alag karke ek-ek line me likho.
+     YAHAN APNE SAARE LINKS DAALO (comma se alag karke)
      ============================================================ */
   var LINKS = [
     "https://www.google.com",
@@ -36,38 +56,48 @@
     "https://www.quora.com",
     "https://www.stackoverflow.com",
     "https://www.medium.com"
-
-    /* Aise hi aur links add karte jao, comma lagana mat bhoolna */
   ];
   /* ============================================================ */
 
-  if (!LINKS || LINKS.length === 0) {
-    document.body.innerHTML = "";
-    return;
-  }
+  var fallback   = document.getElementById("fallback");
+  var manualLink = document.getElementById("manualLink");
+
+  if (!LINKS || LINKS.length === 0) return;
 
   var KEY = "rotate_link_index_v1";
-  var nextIndex = 0;
+  var target = LINKS[0];
 
   try {
     var saved = localStorage.getItem(KEY);
     var idx = (saved === null) ? 0 : parseInt(saved, 10);
 
-    if (isNaN(idx)  idx < 0  idx >= LINKS.length) {
+    // ✅ FIX: || lagaye gaye hain
+    if (isNaN(idx) || idx < 0 || idx >= LINKS.length) {
       idx = 0;
     }
 
-    nextIndex = (idx + 1) % LINKS.length;
-    localStorage.setItem(KEY, nextIndex);
-
-    // Current link khol do
-    window.location.replace(LINKS[idx]);
+    target = LINKS[idx];
+    localStorage.setItem(KEY, (idx + 1) % LINKS.length);
 
   } catch (e) {
-    // Agar localStorage blocked hai (private mode etc.) to random
-    var r = Math.floor(Math.random() * LINKS.length);
-    window.location.replace(LINKS[r]);
+    // localStorage blocked (private mode / sandboxed iframe) -> random
+    target = LINKS[Math.floor(Math.random() * LINKS.length)];
   }
+
+  // Fallback link ready rakho
+  manualLink.href = target;
+  manualLink.textContent = target;
+
+  // Redirect try karo
+  try {
+    window.location.replace(target);
+  } catch (e) {}
+
+  // Agar 1.2s baad bhi page yahi hai (redirect block hua) -> link dikha do
+  setTimeout(function () {
+    fallback.style.display = "block";
+  }, 1200);
+
 })();
 </script>
 </body>
